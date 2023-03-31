@@ -169,6 +169,19 @@ class TexasScheduler {
         }
 
         if (avaliableDates.length !== 0) {
+            for (var available_date of avaliableDates) {
+                for (var available_slot of available_date.AvailableTimeSlots) {
+                    var d = new Date(available_slot.FormattedStartDateTime)
+                    var m = d.getHours()*60 + d.getMinutes()
+                    if (m >= 10*60 && m <= 13*60) {
+                        const booking = available_slot
+                        log.info(`${location.Name} is avaliable on ${booking.FormattedStartDateTime}`);
+                        if (!this.queue.isPaused) this.queue.pause();
+                        this.holdSlot(booking, location);
+                        return Promise.resolve(true)
+                    }
+                }
+            }
             const booking = avaliableDates[0].AvailableTimeSlots[0];
             log.info(`${location.Name} is avaliable on ${booking.FormattedStartDateTime}`);
             if (!this.queue.isPaused) this.queue.pause();
